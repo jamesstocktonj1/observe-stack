@@ -1,0 +1,10 @@
+services:
+  collector:
+    image: otel/opentelemetry-collector:latest
+    restart: unless-stopped
+    command: --config=/etc/otelcol/config.yaml
+    ports:
+      - 4317
+      - 4318
+    volumes:
+      - ./collector/config.yaml:/etc/otelcol/config.yaml
