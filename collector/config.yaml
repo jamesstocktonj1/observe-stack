@@ -15,6 +15,11 @@ processors:
 exporters:
   debug:
 
+  otlphttp/jaeger:
+    endpoint: http://jaeger:4318
+    tls:
+      insecure: true
+
 service:
   extensions: [health_check]
 
@@ -27,7 +32,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, otlphttp/jaeger]
 
     metrics:
       receivers: [otlp]
