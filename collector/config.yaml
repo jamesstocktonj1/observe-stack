@@ -20,6 +20,9 @@ exporters:
     tls:
       insecure: true
 
+  prometheus:
+    endpoint: 0.0.0.0:9090
+
 service:
   extensions: [health_check]
 
@@ -37,4 +40,4 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, prometheus]
