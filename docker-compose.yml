@@ -41,3 +41,14 @@ services:
       - ./prometheus/config.yaml:/etc/prometheus/config.yaml
     depends_on:
       - collector
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+      - jaeger
