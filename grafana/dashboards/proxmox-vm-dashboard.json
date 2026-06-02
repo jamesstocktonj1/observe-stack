@@ -183,7 +183,7 @@
               }
             ]
           },
-          "unit": "binBps"
+          "unit": "bps"
         },
         "overrides": []
       },
@@ -216,7 +216,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(rate(proxmox_vm_netin_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval]))",
+          "expr": "(sum(rate(proxmox_vm_netin_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval]))) * 8",
           "legendFormat": "Total",
           "range": true,
           "refId": "A"
@@ -243,7 +243,7 @@
               }
             ]
           },
-          "unit": "binBps"
+          "unit": "bps"
         },
         "overrides": []
       },
@@ -276,7 +276,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(rate(proxmox_vm_netout_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval]))",
+          "expr": "(sum(rate(proxmox_vm_netout_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval]))) * 8",
           "legendFormat": "Total",
           "range": true,
           "refId": "A"
@@ -619,7 +619,7 @@
             "showPoints": "never",
             "spanNulls": false
           },
-          "unit": "binBps"
+          "unit": "bps"
         },
         "overrides": []
       },
@@ -654,7 +654,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "rate(proxmox_vm_netin_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval])",
+          "expr": "(rate(proxmox_vm_netin_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval])) * 8",
           "legendFormat": "{{name}} ({{node}})",
           "range": true,
           "refId": "A"
@@ -680,7 +680,7 @@
             "showPoints": "never",
             "spanNulls": false
           },
-          "unit": "binBps"
+          "unit": "bps"
         },
         "overrides": []
       },
@@ -715,7 +715,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "rate(proxmox_vm_netout_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval])",
+          "expr": "(rate(proxmox_vm_netout_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval])) * 8",
           "legendFormat": "{{name}} ({{node}})",
           "range": true,
           "refId": "A"
