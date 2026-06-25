@@ -2,7 +2,7 @@
   "annotations": {
     "list": []
   },
-  "description": "Proxmox VM overview \u2014 CPU, memory and network per VM",
+  "description": "Proxmox VM overview — CPU, memory and network per VM",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -11,68 +11,38 @@
   "panels": [
     {
       "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
       "title": "Overview",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "max": 100,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 0,
-        "y": 1
-      },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 1 },
       "id": 1,
       "options": {
         "minVizHeight": 75,
         "minVizWidth": 75,
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": true,
         "text": {}
@@ -81,69 +51,39 @@
       "type": "gauge",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "avg(proxmox_vm_cpu_percent{name=~\"$vm\",node=~\"$node\"}) * 100",
-          "legendFormat": "avg",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT TimeUnix AS time, avg(Value) * 100 AS value FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "max": 100,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 75
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 75 },
+              { "color": "red", "value": 90 }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 6,
-        "y": 1
-      },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 1 },
       "id": 2,
       "options": {
         "minVizHeight": 75,
         "minVizWidth": 75,
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "showThresholdLabels": false,
         "showThresholdMarkers": true,
         "text": {}
@@ -152,279 +92,160 @@
       "type": "gauge",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "sum(proxmox_vm_mem_bytes{name=~\"$vm\",node=~\"$node\"}) / sum(proxmox_vm_maxmem_bytes{name=~\"$vm\",node=~\"$node\"}) * 100",
-          "legendFormat": "used",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sumIf(Value, MetricName = 'proxmox_vm_mem_bytes') / sumIf(Value, MetricName = 'proxmox_vm_maxmem_bytes') * 100 AS value FROM otel.otel_metrics_gauge WHERE MetricName IN ('proxmox_vm_mem_bytes', 'proxmox_vm_maxmem_bytes') AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
+            "steps": [{ "color": "blue", "value": null }]
           },
           "unit": "bps"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 12,
-        "y": 1
-      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
       "id": 3,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
       "title": "Net In (total)",
       "type": "stat",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "(sum(rate(proxmox_vm_netin_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval]))) * 8",
-          "legendFormat": "Total",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sum((max(Value) - min(Value)) / $__interval_s * 8) AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netin_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              {
-                "color": "purple",
-                "value": null
-              }
-            ]
+            "steps": [{ "color": "purple", "value": null }]
           },
           "unit": "bps"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 12,
-        "y": 5
-      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 5 },
       "id": 4,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
       "title": "Net Out (total)",
       "type": "stat",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "(sum(rate(proxmox_vm_netout_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval]))) * 8",
-          "legendFormat": "Total",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sum((max(Value) - min(Value)) / $__interval_s * 8) AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netout_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
+            "steps": [{ "color": "text", "value": null }]
           },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 1
-      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
       "id": 11,
       "options": {
         "colorMode": "none",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
       "title": "VMs Selected",
       "type": "stat",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "count(proxmox_vm_cpu_percent{name=~\"$vm\",node=~\"$node\"})",
-          "legendFormat": "",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT now() AS time, count() AS value FROM (SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node))",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
+            "steps": [{ "color": "text", "value": null }]
           },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 5
-      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 5 },
       "id": 12,
       "options": {
         "colorMode": "none",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
         "textMode": "auto"
       },
       "title": "Total vCPUs",
       "type": "stat",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "sum(proxmox_vm_cpus_ratio{name=~\"$vm\",node=~\"$node\"})",
-          "legendFormat": "",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT now() AS time, sum(argMax(Value, TimeUnix)) AS value FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpus_ratio' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY Attributes['name']",
           "refId": "A"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 9
-      },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
       "id": 101,
       "title": "CPU",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 15,
@@ -440,66 +261,39 @@
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 10
-      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 10 },
       "id": 5,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
+          "calcs": ["mean", "max", "last"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "title": "CPU Usage %",
       "type": "timeseries",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "proxmox_vm_cpu_percent{name=~\"$vm\",node=~\"$node\"} * 100",
-          "legendFormat": "{{name}} ({{node}})",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT TimeUnix AS time, Value * 100 AS value, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 20
-      },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
       "id": 102,
       "title": "Memory",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 15,
@@ -513,103 +307,53 @@
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "B"
-            },
+            "matcher": { "id": "byFrameRefID", "options": "B" },
             "properties": [
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
-                  "fill": "dash"
-                }
-              },
-              {
-                "id": "custom.lineWidth",
-                "value": 1
-              }
+              { "id": "custom.fillOpacity", "value": 0 },
+              { "id": "custom.lineStyle", "value": { "dash": [10, 10], "fill": "dash" } },
+              { "id": "custom.lineWidth", "value": 1 }
             ]
           }
         ]
       },
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 21
-      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 21 },
       "id": 6,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
+          "calcs": ["mean", "max", "last"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
-      "title": "Memory \u2014 Used vs Allocated",
+      "title": "Memory — Used vs Allocated",
       "type": "timeseries",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "proxmox_vm_mem_bytes{name=~\"$vm\",node=~\"$node\"}",
-          "legendFormat": "{{name}} used",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT TimeUnix AS time, Value AS value, concat(Attributes['name'], ' used') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_mem_bytes' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "proxmox_vm_maxmem_bytes{name=~\"$vm\",node=~\"$node\"}",
-          "legendFormat": "{{name}} allocated",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT TimeUnix AS time, Value AS value, concat(Attributes['name'], ' allocated') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_maxmem_bytes' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "B"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 31
-      },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 31 },
       "id": 103,
       "title": "Network",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 15,
@@ -623,54 +367,32 @@
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 32
-      },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 32 },
       "id": 7,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
+          "calcs": ["mean", "max", "last"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "title": "Network In Rate",
       "type": "timeseries",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "(rate(proxmox_vm_netin_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval])) * 8",
-          "legendFormat": "{{name}} ({{node}})",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netin_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 15,
@@ -684,284 +406,128 @@
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 32
-      },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 32 },
       "id": 8,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max",
-            "last"
-          ],
+          "calcs": ["mean", "max", "last"],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "title": "Network Out Rate",
       "type": "timeseries",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "(rate(proxmox_vm_netout_bytes_total{name=~\"$vm\",node=~\"$node\"}[$__rate_interval])) * 8",
-          "legendFormat": "{{name}} ({{node}})",
-          "range": true,
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netout_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
           "refId": "A"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 42
-      },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 42 },
       "id": 104,
       "title": "VM Info",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 43
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 43 },
       "id": 9,
       "options": {
         "cellHeight": "sm",
-        "footer": {
-          "show": false
-        },
+        "footer": { "show": false },
         "showHeader": true,
-        "sortBy": [
-          {
-            "displayName": "Uptime",
-            "desc": true
-          }
-        ]
+        "sortBy": [{ "displayName": "Uptime", "desc": true }]
       },
       "title": "Uptime",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
+            "cellOptions": { "type": "auto" },
             "filterable": false
           }
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Uptime"
-              },
-              {
-                "id": "unit",
-                "value": "s"
-              }
-            ]
+            "matcher": { "id": "byName", "options": "Uptime" },
+            "properties": [{ "id": "unit", "value": "s" }]
           }
         ]
       },
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "job": true,
-              "otel_scope_name": true,
-              "otel_scope_schema_url": true,
-              "otel_scope_version": true,
-              "type": true,
-              "vmid": true,
-              "__name__": true,
-              "exported_job": true,
-              "instance": true
-            },
-            "renameByName": {
-              "name": "VM",
-              "node": "Node"
-            },
-            "indexByName": {
-              "name": 0,
-              "node": 1,
-              "Value": 2
-            }
-          }
-        }
-      ],
+      "transformations": [],
       "type": "table",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "proxmox_vm_uptime_seconds{name=~\"$vm\",node=~\"$node\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": "A"
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT Attributes['name'] AS VM, Attributes['node'] AS Node, argMax(Value, TimeUnix) AS Uptime FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_uptime_seconds' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY VM, Node ORDER BY Uptime DESC",
+          "refId": "A",
+          "format": "table"
         }
       ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 43
-      },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 43 },
       "id": 10,
       "options": {
         "cellHeight": "sm",
-        "footer": {
-          "show": false
-        },
+        "footer": { "show": false },
         "showHeader": true,
-        "sortBy": [
-          {
-            "displayName": "VM",
-            "desc": false
-          }
-        ]
+        "sortBy": [{ "displayName": "VM", "desc": false }]
       },
       "title": "vCPUs Allocated",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
+            "cellOptions": { "type": "auto" },
             "filterable": false
           }
         },
         "overrides": [
           {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
+            "matcher": { "id": "byName", "options": "vCPUs" },
             "properties": [
-              {
-                "id": "displayName",
-                "value": "vCPUs"
-              },
-              {
-                "id": "unit",
-                "value": "short"
-              },
-              {
-                "id": "decimals",
-                "value": 0
-              }
+              { "id": "unit", "value": "short" },
+              { "id": "decimals", "value": 0 }
             ]
           }
         ]
       },
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "job": true,
-              "otel_scope_name": true,
-              "otel_scope_schema_url": true,
-              "otel_scope_version": true,
-              "type": true,
-              "vmid": true,
-              "__name__": true,
-              "exported_job": true,
-              "instance": true
-            },
-            "renameByName": {
-              "name": "VM",
-              "node": "Node"
-            },
-            "indexByName": {
-              "name": 0,
-              "node": 1,
-              "Value": 2
-            }
-          }
-        }
-      ],
+      "transformations": [],
       "type": "table",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "proxmox_vm_cpus_ratio{name=~\"$vm\",node=~\"$node\"} or proxmox_vm_cpus_percent{name=~\"$vm\",node=~\"$node\"}",
-          "format": "table",
-          "instant": true,
-          "range": false,
-          "refId": "A"
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "rawSql": "SELECT Attributes['name'] AS VM, Attributes['node'] AS Node, argMax(Value, TimeUnix) AS vCPUs FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpus_ratio' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY VM, Node ORDER BY VM ASC",
+          "refId": "A",
+          "format": "table"
         }
       ]
     }
   ],
   "refresh": "30s",
   "schemaVersion": 38,
-  "tags": [
-    "proxmox",
-    "vm",
-    "infrastructure"
-  ],
+  "tags": ["proxmox", "vm", "infrastructure"],
   "templating": {
     "list": [
       {
         "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "label_values(proxmox_vm_cpu_percent, name)",
+        "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+        "definition": "SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
         "hide": 0,
         "includeAll": true,
-        "allValue": ".+",
         "multi": true,
         "name": "vm",
         "label": "VM",
         "options": [],
-        "query": {
-          "query": "label_values(proxmox_vm_cpu_percent, name)",
-          "refId": "StandardVariableQuery"
-        },
+        "query": "SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
         "refresh": 2,
         "regex": "",
         "sort": 1,
@@ -969,22 +535,15 @@
       },
       {
         "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "label_values(proxmox_vm_cpu_percent, node)",
+        "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+        "definition": "SELECT DISTINCT Attributes['node'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
         "hide": 0,
         "includeAll": true,
-        "allValue": ".+",
         "multi": false,
         "name": "node",
         "label": "Node",
         "options": [],
-        "query": {
-          "query": "label_values(proxmox_vm_cpu_percent, node)",
-          "refId": "StandardVariableQuery"
-        },
+        "query": "SELECT DISTINCT Attributes['node'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
         "refresh": 2,
         "regex": "",
         "sort": 1,
@@ -992,10 +551,7 @@
       }
     ]
   },
-  "time": {
-    "from": "now-1h",
-    "to": "now"
-  },
+  "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
   "title": "Proxmox VM Overview",

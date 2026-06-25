@@ -15,13 +15,19 @@ processors:
 exporters:
   debug:
 
-  otlphttp/jaeger:
-    endpoint: http://jaeger:4318
-    tls:
-      insecure: true
-
-  prometheus:
-    endpoint: 0.0.0.0:9090
+  clickhouse:
+    endpoint: tcp://clickhouse:9000
+    database: otel
+    logs_table_name: otel_logs
+    traces_table_name: otel_traces
+    metrics_table_name: otel_metrics
+    ttl: 72h
+    timeout: 5s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
 
 service:
   extensions: [health_check]
@@ -30,14 +36,14 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]
+      exporters: [debug, clickhouse]
 
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, otlphttp/jaeger]
+      exporters: [debug, clickhouse]
 
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, prometheus]
+      exporters: [debug, clickhouse]

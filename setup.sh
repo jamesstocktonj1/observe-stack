@@ -10,10 +10,9 @@ fi
 
 echo "Using DATA_DIR: $DATA_DIR"
 
-mkdir -p "$DATA_DIR/prometheus" "$DATA_DIR/grafana" "$DATA_DIR/jaeger"
+mkdir -p "$DATA_DIR/clickhouse" "$DATA_DIR/grafana"
 
-sudo chown -R 65534:65534 "$DATA_DIR/prometheus"
-sudo chown -R 472:472     "$DATA_DIR/grafana"
-sudo chown -R 10001:10001 "$DATA_DIR/jaeger"
+sudo chown -R 101:101 "$DATA_DIR/clickhouse"
+sudo chown -R 472:472 "$DATA_DIR/grafana"
 
 echo "Done. Run 'docker compose up -d' to start the stack."

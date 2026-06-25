@@ -12,7 +12,7 @@ services:
       - collector
 
   collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector-contrib:latest
     restart: unless-stopped
     command: --config=/etc/otelcol/config.yaml
     ports:
@@ -21,44 +21,32 @@ services:
     volumes:
       - ./collector/config.yaml:/etc/otelcol/config.yaml
     depends_on:
-      - jaeger
+      - clickhouse
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
     restart: unless-stopped
     ports:
-      - 16686:16686
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-      - SPAN_STORAGE_TYPE=badger
-      - BADGER_EPHEMERAL=false
-      - BADGER_DIRECTORY_VALUE=/badger/data
-      - BADGER_DIRECTORY_KEY=/badger/key
+      - 8123:8123
+      - 9000:9000
     volumes:
-      - ${DATA_DIR:-./data}/jaeger:/badger
-
-  prometheus:
-    image: prom/prometheus:latest
-    restart: unless-stopped
-    command: --config.file=/etc/prometheus/config.yaml
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus/config.yaml:/etc/prometheus/config.yaml
-      - ${DATA_DIR:-./data}/prometheus:/prometheus
-    depends_on:
-      - collector
+      - ${DATA_DIR:-./data}/clickhouse:/var/lib/clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
 
   grafana:
     image: grafana/grafana:latest
     restart: unless-stopped
     ports:
       - 3000:3000
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
       - ./grafana/dashboards:/etc/grafana/dashboards
       - ${DATA_DIR:-./data}/grafana:/var/lib/grafana
     depends_on:
-      - prometheus
-      - jaeger
+      - clickhouse
