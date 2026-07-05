@@ -119,7 +119,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT time, sum(bps) AS bps, node FROM (SELECT $__timeInterval(TimeUnix) AS time, Attributes['node'] AS node, (max(Value) - min(Value)) / $__interval_s * 8 AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_receive_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, node) GROUP BY time, node ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, Attributes['node'] AS node FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_receive_total' AND Attributes['device'] = 'eno1' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, node ORDER BY time",
           "refId": "A"
         }
       ]
@@ -149,7 +149,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT time, sum(bps) AS bps, node FROM (SELECT $__timeInterval(TimeUnix) AS time, Attributes['node'] AS node, (max(Value) - min(Value)) / $__interval_s * 8 AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_transmit_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, node) GROUP BY time, node ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, Attributes['node'] AS node FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_transmit_total' AND Attributes['device'] = 'eno1' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, node ORDER BY time",
           "refId": "A"
         }
       ]
@@ -374,7 +374,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, Attributes['node'] AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_receive_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, Attributes['node'] AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_receive_total' AND Attributes['device'] = 'eno1' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
           "refId": "A"
         }
       ]
@@ -412,7 +412,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, Attributes['node'] AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_transmit_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, Attributes['node'] AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_node_network_transmit_total' AND Attributes['device'] = 'eno1' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
           "refId": "A"
         }
       ]
