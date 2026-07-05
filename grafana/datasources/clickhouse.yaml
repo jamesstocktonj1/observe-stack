@@ -12,3 +12,5 @@ datasources:
       protocol: native
       username: default
       defaultDatabase: otel
+    secureJsonData:
+      password: $__env{CLICKHOUSE_PASSWORD}

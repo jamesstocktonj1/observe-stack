@@ -18,6 +18,8 @@ services:
     ports:
       - 4317:4317
       - 4318:4318
+    environment:
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
     volumes:
       - ./collector/config.yaml:/etc/otelcol/config.yaml
     depends_on:
@@ -29,6 +31,8 @@ services:
     ports:
       - 8123:8123
       - 9000:9000
+    environment:
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
     volumes:
       - ${DATA_DIR:-./data}/clickhouse:/var/lib/clickhouse
     ulimits:
@@ -43,6 +47,7 @@ services:
       - 3000:3000
     environment:
       - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml

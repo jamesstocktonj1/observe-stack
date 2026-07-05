@@ -17,6 +17,8 @@ exporters:
 
   clickhouse:
     endpoint: tcp://clickhouse:9000
+    username: default
+    password: ${env:CLICKHOUSE_PASSWORD}
     database: otel
     logs_table_name: otel_logs
     traces_table_name: otel_traces
