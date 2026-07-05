@@ -54,6 +54,8 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+    environment:
+      - GF_DATABASE_WAL=true
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
