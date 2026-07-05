@@ -52,7 +52,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT TimeUnix AS time, avg(Value) * 100 AS value FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
+          "rawSql": "SELECT now() AS time, avg(Value) * 100 AS value FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node)",
           "refId": "A"
         }
       ]
@@ -93,7 +93,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sumIf(Value, MetricName = 'proxmox_vm_mem_bytes') / sumIf(Value, MetricName = 'proxmox_vm_maxmem_bytes') * 100 AS value FROM otel.otel_metrics_gauge WHERE MetricName IN ('proxmox_vm_mem_bytes', 'proxmox_vm_maxmem_bytes') AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sumIf(Value, MetricName = 'proxmox_vm_mem') / sumIf(Value, MetricName = 'proxmox_vm_maxmem') * 100 AS value FROM otel.otel_metrics_gauge WHERE MetricName IN ('proxmox_vm_mem', 'proxmox_vm_maxmem') AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ]
@@ -127,7 +127,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sum((max(Value) - min(Value)) / $__interval_s * 8) AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netin_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sum((max(Value) - min(Value)) / $__interval_s * 8) AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netin_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ]
@@ -161,7 +161,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sum((max(Value) - min(Value)) / $__interval_s * 8) AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netout_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, sum((max(Value) - min(Value)) / $__interval_s * 8) AS bps FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netout_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ]
@@ -195,7 +195,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT now() AS time, count() AS value FROM (SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node))",
+          "rawSql": "SELECT now() AS time, count() AS value FROM (SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node))",
           "refId": "A"
         }
       ]
@@ -229,7 +229,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT now() AS time, sum(argMax(Value, TimeUnix)) AS value FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpus_ratio' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY Attributes['name']",
+          "rawSql": "SELECT now() AS time, sum(cpus) AS value FROM (SELECT argMax(Value, TimeUnix) AS cpus FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpus' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY Attributes['name'])",
           "refId": "A"
         }
       ]
@@ -277,7 +277,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT TimeUnix AS time, Value * 100 AS value, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
+          "rawSql": "SELECT TimeUnix AS time, Value * 100 AS value, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "A"
         }
       ]
@@ -332,12 +332,12 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT TimeUnix AS time, Value AS value, concat(Attributes['name'], ' used') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_mem_bytes' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
+          "rawSql": "SELECT TimeUnix AS time, Value AS value, concat(Attributes['name'], ' used') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_mem' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "A"
         },
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT TimeUnix AS time, Value AS value, concat(Attributes['name'], ' allocated') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_maxmem_bytes' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
+          "rawSql": "SELECT TimeUnix AS time, Value AS value, concat(Attributes['name'], ' allocated') AS series FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_maxmem' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) ORDER BY time",
           "refId": "B"
         }
       ]
@@ -383,7 +383,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netin_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netin_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
           "refId": "A"
         }
       ]
@@ -422,7 +422,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netout_bytes_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(TimeUnix) AS time, (max(Value) - min(Value)) / $__interval_s * 8 AS bps, concat(Attributes['name'], ' (', Attributes['node'], ')') AS series FROM otel.otel_metrics_sum WHERE MetricName = 'proxmox_vm_netout_total' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY time, series ORDER BY time",
           "refId": "A"
         }
       ]
@@ -465,7 +465,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT Attributes['name'] AS VM, Attributes['node'] AS Node, argMax(Value, TimeUnix) AS Uptime FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_uptime_seconds' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY VM, Node ORDER BY Uptime DESC",
+          "rawSql": "SELECT Attributes['name'] AS VM, Attributes['node'] AS Node, argMax(Value, TimeUnix) AS Uptime FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_uptime' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY VM, Node ORDER BY Uptime DESC",
           "refId": "A",
           "format": "table"
         }
@@ -505,7 +505,7 @@
       "targets": [
         {
           "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-          "rawSql": "SELECT Attributes['name'] AS VM, Attributes['node'] AS Node, argMax(Value, TimeUnix) AS vCPUs FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpus_ratio' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY VM, Node ORDER BY VM ASC",
+          "rawSql": "SELECT Attributes['name'] AS VM, Attributes['node'] AS Node, argMax(Value, TimeUnix) AS vCPUs FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpus' AND $__timeFilter(TimeUnix) AND $__conditionalAll(Attributes['name'] IN ($vm), $vm) AND $__conditionalAll(Attributes['node'] IN ($node), $node) GROUP BY VM, Node ORDER BY VM ASC",
           "refId": "A",
           "format": "table"
         }
@@ -520,14 +520,14 @@
       {
         "current": {},
         "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-        "definition": "SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
+        "definition": "SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' ORDER BY 1",
         "hide": 0,
         "includeAll": true,
         "multi": true,
         "name": "vm",
         "label": "VM",
         "options": [],
-        "query": "SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
+        "query": "SELECT DISTINCT Attributes['name'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' ORDER BY 1",
         "refresh": 2,
         "regex": "",
         "sort": 1,
@@ -536,14 +536,14 @@
       {
         "current": {},
         "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
-        "definition": "SELECT DISTINCT Attributes['node'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
+        "definition": "SELECT DISTINCT Attributes['node'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' ORDER BY 1",
         "hide": 0,
         "includeAll": true,
         "multi": false,
         "name": "node",
         "label": "Node",
         "options": [],
-        "query": "SELECT DISTINCT Attributes['node'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu_percent' ORDER BY 1",
+        "query": "SELECT DISTINCT Attributes['node'] FROM otel.otel_metrics_gauge WHERE MetricName = 'proxmox_vm_cpu' ORDER BY 1",
         "refresh": 2,
         "regex": "",
         "sort": 1,
