@@ -33,8 +33,8 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
+        "h": 10,
+        "w": 2,
         "x": 0,
         "y": 0
       },
@@ -91,9 +91,9 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 8,
+        "h": 10,
+        "w": 3,
+        "x": 2,
         "y": 0
       },
       "targets": [
@@ -154,9 +154,9 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
+        "h": 10,
+        "w": 3,
+        "x": 5,
         "y": 0
       },
       "targets": [
@@ -217,10 +217,10 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 7
+        "h": 10,
+        "w": 8,
+        "x": 8,
+        "y": 0
       },
       "targets": [
         {
@@ -252,7 +252,7 @@
         "legend": {
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "mode": "multi"
@@ -268,10 +268,10 @@
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 7
+        "h": 10,
+        "w": 8,
+        "x": 16,
+        "y": 0
       },
       "targets": [
         {
@@ -303,7 +303,7 @@
         "legend": {
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "mode": "multi"
