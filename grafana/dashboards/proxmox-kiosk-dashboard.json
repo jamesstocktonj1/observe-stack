@@ -25,64 +25,6 @@
   "links": [],
   "panels": [
     {
-      "id": 1,
-      "type": "stat",
-      "title": "VMs",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 2,
-        "x": 0,
-        "y": 0
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "expr": "count(proxmox_vm_cpu_percent)",
-          "legendFormat": "VMs",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "decimals": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      }
-    },
-    {
       "id": 2,
       "type": "gauge",
       "title": "CPU",
@@ -92,8 +34,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 3,
-        "x": 2,
+        "w": 4,
+        "x": 0,
         "y": 0
       },
       "targets": [
@@ -155,8 +97,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 3,
-        "x": 5,
+        "w": 4,
+        "x": 4,
         "y": 0
       },
       "targets": [
